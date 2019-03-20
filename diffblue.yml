@@ -1,0 +1,65 @@
+cbmcArguments:
+  depth: false
+  java-max-vla-length: false
+  max-nondet-array-length: 100
+phases:
+-
+#0 the only phase without load-containing-class-only or single-function-only
+  timeout: 300
+  cbmcArguments:
+    classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'    
+    max-nondet-string-length: 10
+    string-printable: true
+    unwind: 1
+    refine: true
+    throw-runtime-exceptions: false
+  nextPhase:
+    not_analyzed: null
+-
+#2
+  timeout: 300
+  cbmcArguments:
+    classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+    max-nondet-string-length: 50
+    string-printable: true
+    unwind: 2
+    throw-runtime-exceptions: false
+  nextPhase:
+    time_out: 4
+-
+#3
+  timeout: 300
+  cbmcArguments:
+    classpath: '/tools/cbmc/models.jar:.'
+    load-containing-class-only: true
+    max-nondet-string-length: 100
+    string-printable: false
+    unwind: 3
+    throw-runtime-exceptions: true
+-
+#4 fallback for timeouts, copy of #3 with single-function-only
+  timeout: 300
+  cbmcArguments:
+    classpath: '/tools/cbmc/models.jar:.'
+    max-nondet-string-length: 100
+    single-function-only: true
+    string-printable: false
+    unwind: 3
+    throw-runtime-exceptions: true
+  depth: false
+  do-not-test-methods-with-access: [ private ]
+  java-generate-no-comments: true
+  no-trivial-tests: true
+units:
+  # Target Coverage: Unknown %
+  - target:
+    - dir: nifi-commons/nifi-security-utils/target/classes
+      file: org/apache/nifi/security/util/crypto/scrypt/Scrypt.class
+      sourceDir: nifi-commons/nifi-security-utils/src/main/java
+      sourceFile: org/apache/nifi/security/util/crypto/scrypt/Scrypt.java
+    # Child of Scrypt.class
+    # Child Coverage: Unknown %
+    - dir: nifi-commons/nifi-security-utils/target/classes
+      file: org/apache/nifi/security/util/crypto/CipherUtility.class
+      sourceDir: nifi-commons/nifi-security-utils/src/main/java
+      sourceFile: org/apache/nifi/security/util/crypto/CipherUtility.java
